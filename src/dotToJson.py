@@ -31,8 +31,8 @@ def getJsonData_funcGNN_version(graph, target_mr):
                 node_list_sorted[i]))
 
     jsonDict = {}
-    jsonDict["graph_1"] = edge_list
-    jsonDict["labels_1"] = node_label_list
+    jsonDict["graph"] = edge_list
+    jsonDict["labels"] = node_label_list
     jsonDict["mr_label"] = target_mr
 
     # print(jsonDict)
@@ -87,11 +87,12 @@ def getJsonData_labels_as_dict(graph, target_mr):
     return jsonDict
 
 
-def dumpJson(output_dir, jsonFile, g1):  # function to dump the Json files
+def dumpJson(output_dir, jsonFile, file_name):  # function to dump the Json files
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    with open(str(output_dir) + str(g1) + '.json', 'w') as fp:
+    with open(str(output_dir) + str(file_name) + '.json', 'w') as fp:
         json.dump(jsonFile, fp)
+    fp.close()
 
 
 def main():
@@ -110,12 +111,13 @@ def main():
                      os.path.isfile(os.path.join(dotFile_data_path, f)) and f.endswith('.dot')]
 
         for dot in dot_files:
-            method_name = dot.split('_m.')[0]
             graph = nx.drawing.nx_pydot.read_dot(str(dotFile_data_path) + str(dot))
-
+            # NOTE: use split('_m.') to convert dot files of the original java programs, split('_m_') for fot files
+            # of transformed java program
+            method_name = dot.split('_m.')[0]
             MR_add_target = df_mr.loc[method_name][mr]
             jsonData = getJsonData_funcGNN_version(graph, int(MR_add_target))
-            dumpJson(json_output_dir, jsonData, method_name)
+            dumpJson(json_output_dir, jsonData, dot.split('.dot')[0])
             count_dot_files += 1
 
         print("Converted {} dot files to JSON. \n Saved in {}".format(count_dot_files, json_output_dir))

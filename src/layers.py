@@ -2,10 +2,12 @@
 
 import torch
 
+
 class AttentionModule(torch.nn.Module):
     """
     funcGNN Attention Module to make a pass on graph.
     """
+
     def __init__(self, args):
         """
         :param args: Arguments object.
@@ -40,10 +42,12 @@ class AttentionModule(torch.nn.Module):
         representation = torch.mm(torch.t(embedding), sigmoid_scores)
         return representation
 
-class TenorNetworkModule(torch.nn.Module):
+
+class TenorNetworkModule(torch.nn.Module):  # Not using this module
     """
     funcGNN Tensor Network module to calculate similarity vector.
     """
+
     def __init__(self, args):
         """
         :param args: Arguments object.
@@ -62,7 +66,7 @@ class TenorNetworkModule(torch.nn.Module):
                                                              self.args.tensor_neurons))
 
         self.weight_matrix_block = torch.nn.Parameter(torch.Tensor(self.args.tensor_neurons,
-                                                                   2*self.args.filters_3))
+                                                                   2 * self.args.filters_3))
         self.bias = torch.nn.Parameter(torch.Tensor(self.args.tensor_neurons, 1))
 
     def init_parameters(self):

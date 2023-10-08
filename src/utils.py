@@ -4,6 +4,7 @@ import json
 import math
 from texttable import Texttable
 
+
 def tab_printer(args):
     """
     Function to print the logs in a nice tabular format.
@@ -16,9 +17,10 @@ def tab_printer(args):
     t.add_rows([[k.replace("_", " ").capitalize(), args[k]] for k in keys])
     print(t.draw())
 
-def process_pair(path):
+
+def process_graph_from_json(path):
     """
-    Reading a json file with a pair of graphs.
+    Reading a json file of a graph.
     :param path: Path to a JSON file.
     :return data: Dictionary with data.
     """
@@ -27,6 +29,7 @@ def process_pair(path):
 
 
 def calculate_loss(prediction, target):
+    # TODO replace with binary cross entropy as loss function
     """
     Calculating the squared loss on the normalized GED.
     :param prediction: Predicted log value of GED.
@@ -35,14 +38,14 @@ def calculate_loss(prediction, target):
     """
     log_prediction = -math.log(prediction)
     log_target = -math.log(target)
-    score = (log_prediction - log_target)**2
+    score = (log_prediction - log_target) ** 2
     return score
 
-def calculate_normalized_ged(data):
-    """
-    Calculating the normalized GED for a pair of graphs.
-    :param data: Data table.
-    :return norm_ged: Normalized GED score.
-    """
-    norm_ged = data["ged"]/(0.5*(len(data["labels_1"])+len(data["labels_2"])))
-    return norm_ged
+# def calculate_normalized_ged(data):
+#     """
+#     Calculating the normalized GED for a pair of graphs.
+#     :param data: Data table.
+#     :return norm_ged: Normalized GED score.
+#     """
+#     norm_ged = data["ged"]/(0.5*(len(data["labels_1"])+len(data["labels_2"])))
+#     return norm_ged
