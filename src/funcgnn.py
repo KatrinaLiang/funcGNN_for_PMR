@@ -37,7 +37,7 @@ class funcGNN(torch.nn.Module):
         # if self.args.histogram == True:
         #     self.feature_count = self.args.tensor_neurons + self.args.bins
         # else:
-        #     self.feature_count = self.args.tensor_neurons
+        self.feature_count = self.args.tensor_neurons
 
     def setup_layers(self):
         """
@@ -49,9 +49,9 @@ class funcGNN(torch.nn.Module):
         self.convolution_3 = SAGEConv(self.args.filters_2, self.args.filters_3, normalize=True)
         self.attention = AttentionModule(self.args)
         # self.tensor_network = TenorNetworkModule(self.args)
-        self.fully_connected_first = torch.nn.Linear(self.feature_count,
-                                                     self.args.bottle_neck_neurons)
-
+        self.fully_connected_first = torch.nn.Linear(self.feature_count,  # input size is the size of the attention layer h_i, 32?
+                                                     self.args.bottle_neck_neurons)  # half of the input size, 16?
+        # output of the fully connected layer has the same dimension as the input to the scoring layer
         self.scoring_layer = torch.nn.Linear(self.args.bottle_neck_neurons, 1)
 
     # def calculate_histogram(self, abstract_features_1, abstract_features_2):
@@ -108,7 +108,7 @@ class funcGNN(torch.nn.Module):
         #     hist = self.calculate_histogram(abstract_features_1,
         #                                     torch.t(abstract_features_2))
 
-        pooled_features_1 = self.attention(abstract_features_1)
+        pooled_features_1 = self.attention(abstract_features_1)  # h_i
         # pooled_features_2 = self.attention(abstract_features_2)
         # scores = self.tensor_network(pooled_features_1, pooled_features_2)
         # scores = torch.t(scores)

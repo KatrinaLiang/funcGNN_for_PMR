@@ -1,0 +1,1 @@
+{"graph": [[0, 1], [1, 4], [4, 5], [5, 6], [6, 7], [7, 8], [7, 3], [8, 9], [9, 10], [10, 11], [11, 2], [2, 7]], "labels": ["r0 := @parameter0", "i2 = 0", "goto label1", "label2: return i2", "r1 = r0", "i0 = lengthof r1", "i3 = 0", "label1: if i3 >= i0 goto label2", "$r2 = r1[i3]", "i1 = $r2.intValue()", "i2 = i2 + i1", "i3 = i3 + 1"], "mr_label": 1}
