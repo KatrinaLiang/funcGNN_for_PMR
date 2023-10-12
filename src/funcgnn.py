@@ -27,6 +27,7 @@ class funcGNN(torch.nn.Module):
         super(funcGNN, self).__init__()
         self.args = args
         self.number_labels = number_of_labels
+        self.feature_count = self.args.tensor_neurons
         self.setup_layers()
 
     def calculate_bottleneck_features(self):
@@ -50,9 +51,9 @@ class funcGNN(torch.nn.Module):
         self.attention = AttentionModule(self.args)
         # self.tensor_network = TenorNetworkModule(self.args)
         self.fully_connected_first = torch.nn.Linear(self.feature_count,  # input size is the size of the attention layer h_i, 32?
-                                                     self.args.bottle_neck_neurons)  # half of the input size, 16?
+                                                     16)  # half of the input size, 16?
         # output of the fully connected layer has the same dimension as the input to the scoring layer
-        self.scoring_layer = torch.nn.Linear(self.args.bottle_neck_neurons, 1)
+        self.scoring_layer = torch.nn.Linear(16, 1)
 
     # def calculate_histogram(self, abstract_features_1, abstract_features_2):
     #     """
@@ -101,14 +102,14 @@ class funcGNN(torch.nn.Module):
         features_1 = data["features_1"]
         # features_2 = data["features_2"]
 
-        abstract_features_1 = self.convolutional_pass(edge_index_1, features_1)
+        abstract_features_1 = self.convolutional_pass(edge_index_1, features_1)  # Tensor: (18, 32)
         # abstract_features_2 = self.convolutional_pass(edge_index_2, features_2)
 
         # if self.args.histogram == True:
         #     hist = self.calculate_histogram(abstract_features_1,
         #                                     torch.t(abstract_features_2))
 
-        pooled_features_1 = self.attention(abstract_features_1)  # h_i
+        pooled_features_1 = self.attention(abstract_features_1)  # h_i, # Tensor: (32, 1)
         # pooled_features_2 = self.attention(abstract_features_2)
         # scores = self.tensor_network(pooled_features_1, pooled_features_2)
         # scores = torch.t(scores)
@@ -139,12 +140,15 @@ class funcGNNTrainer(object):
         self.args = args
         self.initial_train_test_set_and_label_enumeration()
         self.setup_model()
+        self.feature_count = self.args.tensor_neurons
+
 
     def setup_model(self):
         """
         Creating a funcGNN.
         """
         self.model = funcGNN(self.args, self.number_of_labels)
+        print(self.model)
 
     def initial_train_test_set_and_label_enumeration(self):
         """
@@ -224,12 +228,19 @@ class funcGNNTrainer(object):
         """
         self.optimizer.zero_grad()
         losses = 0
+        # predictions = []
+        # targets = []
         for graph in batch:
             data = process_graph_from_json(graph)
             data = self.transfer_to_torch(data)
             target = data["mr_label"]
             prediction = self.model(data)
             losses = losses + torch.nn.functional.mse_loss(prediction, data["mr_label"])
+
+            # predictions.append(prediction)
+            # targets.append(target)
+
+        # loss = torch.nn.CrossEntropyLoss(torch.Tensor(list(predictions.values)), torch.Tensor(targets))
         losses.backward(retain_graph=True)
         self.optimizer.step()
         loss = losses.item()

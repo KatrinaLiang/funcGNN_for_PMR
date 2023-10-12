@@ -11,7 +11,7 @@ def parameter_parser():
     parser = argparse.ArgumentParser(description="Run funcGNN.")
 
     parser.add_argument("--all-graphs",
-                        default="baseline_json/MR_ADD/",
+                        default="/home/katrina/Desktop/funcGNN_for_PMR/baseline_json/MR_ADD/",
                         help="Folder with all graph jsons.")
 
     parser.add_argument("--test-size",
@@ -55,7 +55,7 @@ def parameter_parser():
 
     parser.add_argument("--bottle-neck-neurons",
                         type=int,
-                        default=32,
+                        default=2,
                         help="Bottle neck layer neurons. Default is 32.")
 
     parser.add_argument("--batch-size",
